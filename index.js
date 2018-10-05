@@ -1,10 +1,16 @@
 const express = require('express');
 const Joi = require('joi');
 const app = express();
-
+// import  {customerRoutes} from './routes/v1/customer.routes';
 //db connect string
-var connect = "postgres://postgres:dimuthu7%24@localhost/demodb";
-console.log(connect);
+const { Pool, Client } = require('pg');
+const client = new Client({
+    user: 'postgres',
+    host: '35.193.85.2',
+    database: 'demo-db',
+    password: 'Dimuthu123',
+    port: 5432,
+});
 
 app.use(express.json());
 
@@ -32,12 +38,22 @@ const customers = [{
 
 ];
 
+// app.get('/api/v1',[
+//     customerRoutes
+// ])
 //this is a route -it has a path specifier and a callback function
 app.get('/', (req, res) => {
     res.send("Hi, this is a HTTP get request!");
 });
-app.get('/api/customers', (req, res) => {
-    res.send(customers);
+app.get('/api/customer', (req, res) => {
+    // res.send(customers);
+   // console.log(client)
+    client.query('SELECT * from public.customers',(err, result) => {
+        console.log(err, result)
+        res.json(result)
+        client.end()
+      })
+
 });
 
 app.put('/api/customer/:id', (req, res) => {
